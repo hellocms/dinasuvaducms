@@ -24,7 +24,7 @@ const dirname = path.dirname(filename)
 // Define the allowed origins dynamically based on the environment
 const allowedOrigins =
   process.env.NODE_ENV === 'production'
-    ? ['https://payload-admin-netlify.netlify.app']
+    ? ['https://aesthetic-swan-5095dd.netlify.app/p']
     : ['http://localhost:3000', 'http://localhost:3001']
 
 export default buildConfig({

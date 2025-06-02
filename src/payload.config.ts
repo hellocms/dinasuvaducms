@@ -85,13 +85,7 @@ export default buildConfig({
   db: mongooseAdapter({
     url: process.env.MONGODB_URI || '',
     connectOptions: {
-      // Debug: Log MongoDB connection status
-      onConnected: () => {
-        console.log('Debug: Successfully connected to MongoDB')
-      },
-      onError: (err) => {
-        console.error('Debug: MongoDB connection error:', err.message)
-      },
+      // Add valid mongoose connect options here if needed
     },
   }),
   collections,

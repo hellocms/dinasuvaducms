@@ -1,6 +1,5 @@
-// storage-adapter-import-placeholder
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
-import sharp from 'sharp' // sharp-import
+import sharp from 'sharp'
 import path from 'path'
 import { buildConfig, PayloadRequest } from 'payload'
 import { fileURLToPath } from 'url'
@@ -26,6 +25,28 @@ const allowedOrigins =
   process.env.NODE_ENV === 'production'
     ? ['https://aesthetic-swan-5095dd.netlify.app/p']
     : ['http://localhost:3000', 'http://localhost:3001']
+
+// Debug: Log environment variables to ensure they're set correctly
+console.log('Debug: Environment Variables Check')
+console.log('NODE_ENV:', process.env.NODE_ENV)
+console.log('MONGODB_URI:', process.env.MONGODB_URI ? 'Set' : 'Not Set')
+console.log('PAYLOAD_SECRET:', process.env.PAYLOAD_SECRET ? 'Set' : 'Not Set')
+console.log('S3_BUCKET:', process.env.S3_BUCKET ? 'Set' : 'Not Set')
+console.log('S3_ACCESS_KEY_ID:', process.env.S3_ACCESS_KEY_ID ? 'Set' : 'Not Set')
+console.log('S3_SECRET_ACCESS_KEY:', process.env.S3_SECRET_ACCESS_KEY ? 'Set' : 'Not Set')
+console.log('S3_REGION:', process.env.S3_REGION ? 'Set' : 'Not Set')
+console.log('S3_ENDPOINT:', process.env.S3_ENDPOINT ? 'Set' : 'Not Set')
+
+// Debug: Log collections before initialization
+const collections = [Pages, Posts, Media, Categories, Users, Tags]
+console.log('Debug: Collections Before Initialization')
+collections.forEach((collection, index) => {
+  console.log(`Collection ${index}:`, collection?.slug || 'undefined')
+  if (!collection || !collection.slug) {
+    console.error(`Error: Collection at index ${index} is invalid:`, collection)
+    throw new Error(`Collection at index ${index} is missing a slug`)
+  }
+})
 
 export default buildConfig({
   admin: {
@@ -63,9 +84,17 @@ export default buildConfig({
   editor: defaultLexical,
   db: mongooseAdapter({
     url: process.env.MONGODB_URI || '',
+    connectOptions: {
+      // Debug: Log MongoDB connection status
+      onConnected: () => {
+        console.log('Debug: Successfully connected to MongoDB')
+      },
+      onError: (err) => {
+        console.error('Debug: MongoDB connection error:', err.message)
+      },
+    },
   }),
-  collections: [Pages, Posts, Media, Categories, Users, Tags],
-  // Use the dynamic allowedOrigins for cors and csrf
+  collections,
   cors: allowedOrigins,
   csrf: allowedOrigins,
   globals: [Header, Footer],
@@ -100,5 +129,9 @@ export default buildConfig({
       },
     },
     tasks: [],
+  },
+  // Debug: Log when Payload is fully initialized
+  onInit: async (payload) => {
+    console.log('Debug: Payload CMS initialized successfully')
   },
 })

@@ -76,4 +76,24 @@ export const Media: CollectionConfig = {
       },
     ],
   },
+  hooks: {
+    afterRead: [
+      async ({ doc }) => {
+        if (doc.filename) {
+          const baseUrl = process.env.S3_ENDPOINT
+          const bucket = process.env.S3_BUCKET
+          const prefix = 'uploads'
+          doc.url = `${baseUrl}/${bucket}/${prefix}/${doc.filename}`
+          if (doc.sizes) {
+            Object.keys(doc.sizes).forEach((size) => {
+              if (doc.sizes[size].filename) {
+                doc.sizes[size].url = `${baseUrl}/${bucket}/${prefix}/${size}-${doc.filename}`
+              }
+            })
+          }
+        }
+        return doc
+      },
+    ],
+  },
 }

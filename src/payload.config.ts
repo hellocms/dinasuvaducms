@@ -14,20 +14,16 @@ import { Footer } from './Footer/config'
 import { Header } from './Header/config'
 import { plugins } from './plugins'
 import { defaultLexical } from '@/fields/defaultLexical'
-// import { getServerSideURL } from './utilities/getURL'  // unused, so commented out
-
+import { getServerSideURL } from './utilities/getURL'
 import { s3Storage } from '@payloadcms/storage-s3'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
-// Define allowed origins (including your admin domain)
+// Define the allowed origins dynamically based on the environment
 const allowedOrigins =
   process.env.NODE_ENV === 'production'
-    ? [
-        'https://admin.dinasuvadu.com',
-        'https://aesthetic-swan-5095dd.netlify.app/p',
-      ]
+    ? ['https://admin.dinasuvadu.com']
     : ['http://localhost:3000', 'http://localhost:3001']
 
 // Debug: Log environment variables to ensure they're set correctly
@@ -41,7 +37,7 @@ console.log('S3_SECRET_ACCESS_KEY:', process.env.S3_SECRET_ACCESS_KEY ? 'Set' : 
 console.log('S3_REGION:', process.env.S3_REGION ? 'Set' : 'Not Set')
 console.log('S3_ENDPOINT:', process.env.S3_ENDPOINT ? 'Set' : 'Not Set')
 
-// Collections array
+// Debug: Log collections before initialization
 const collections = [Pages, Posts, Media, Categories, Users, Tags]
 console.log('Debug: Collections Before Initialization')
 collections.forEach((collection, index) => {
@@ -62,11 +58,6 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
     user: Users.slug,
-    cookieOptions: {
-      secure: process.env.NODE_ENV === 'production',
-      domain: process.env.COOKIE_DOMAIN || 'admin.dinasuvadu.com',
-      sameSite: 'lax',
-    },
     livePreview: {
       breakpoints: [
         {
@@ -94,7 +85,7 @@ export default buildConfig({
   db: mongooseAdapter({
     url: process.env.MONGODB_URI || '',
     connectOptions: {
-      // Add mongoose connect options here if needed
+      // Add valid mongoose connect options here if needed
     },
   }),
   collections,
@@ -134,7 +125,8 @@ export default buildConfig({
     },
     tasks: [],
   },
-  onInit: async (_payload) => {
+  // Debug: Log when Payload is fully initialized
+  onInit: async (payload) => {
     console.log('Debug: Payload CMS initialized successfully')
   },
 })
